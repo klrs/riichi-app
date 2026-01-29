@@ -8,3 +8,11 @@ dependencies = [
     "mahjong>=1.4.0",
     "ultralytics>=8.4.8",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["src"]

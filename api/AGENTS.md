@@ -11,3 +11,19 @@ For adding a new dependency, use `uv add <dependency>`. This dependency will app
 For removing a dependency, use `uv remove <dependency>`.
 
 To start the project, use `uv run main.py`.
+
+## Type Safety (Strict)
+
+Write Python with maximum static type safety.
+
+Fully annotate all functions, methods, and public variables.
+
+Avoid Any; treat it as unsafe.
+
+Prefer precise types, TypedDict, Protocol, Literal, and dataclasses.
+
+Use Python 3.11+ typing syntax.
+
+Code must pass strict static type checking.
+
+Do not rely on dynamic typing, monkey patching, or runtime attribute creation.
