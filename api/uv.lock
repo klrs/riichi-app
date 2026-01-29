@@ -11,11 +11,15 @@ name = "api"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "mahjong" },
     { name = "ultralytics" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "ultralytics", specifier = ">=8.4.8" }]
+requires-dist = [
+    { name = "mahjong", specifier = ">=1.4.0" },
+    { name = "ultralytics", specifier = ">=8.4.8" },
+]
 
 [[package]]
 name = "certifi"
@@ -308,6 +312,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/99/dd/841e9a66c4715477ea0abc78da039832fbb09dac5c35c58dc4c41a407b8a/kiwisolver-1.4.9-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:aedff62918805fb62d43a4aa2ecd4482c380dc76cd31bd7c8878588a61bd0369", size = 2391835, upload-time = "2025-08-10T21:27:34.23Z" },
     { url = "https://files.pythonhosted.org/packages/0c/28/4b2e5c47a0da96896fdfdb006340ade064afa1e63675d01ea5ac222b6d52/kiwisolver-1.4.9-cp314-cp314t-win_amd64.whl", hash = "sha256:1fa333e8b2ce4d9660f2cda9c0e1b6bafcfb2457a9d259faa82289e73ec24891", size = 79988, upload-time = "2025-08-10T21:27:35.587Z" },
     { url = "https://files.pythonhosted.org/packages/80/be/3578e8afd18c88cdf9cb4cffde75a96d2be38c5a903f1ed0ceec061bd09e/kiwisolver-1.4.9-cp314-cp314t-win_arm64.whl", hash = "sha256:4a48a2ce79d65d363597ef7b567ce3d14d68783d2b2263d98db3d9477805ba32", size = 70260, upload-time = "2025-08-10T21:27:36.606Z" },
+]
+
+[[package]]
+name = "mahjong"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b4/16/f2025a635f443b3de5fbc88a73d8577c14724bdfc2ab5bfc5f900c2fcd45/mahjong-1.4.0.tar.gz", hash = "sha256:af3d0183a904219b74fb0edbcf0e68a522168012782143b48f7f6f424784aafe", size = 32221, upload-time = "2025-10-20T01:21:05.515Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0b/3d/a55b729708a6c0acafdc6ebe908ef4a2d3826ecfd403bddb79ad54d9dc62/mahjong-1.4.0-py3-none-any.whl", hash = "sha256:26e1c487973917b3e17358a75809277fc3d868db03f9c4126fc9fa22f142cafe", size = 65735, upload-time = "2025-10-20T01:21:03.946Z" },
 ]
 
 [[package]]
