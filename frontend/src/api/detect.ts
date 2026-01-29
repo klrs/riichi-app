@@ -1,8 +1,6 @@
 import type { TileDetectionResponse } from "../types/api.ts";
 
-export async function detectTiles(
-  imageBlob: Blob
-): Promise<TileDetectionResponse> {
+export async function detectTiles(imageBlob: Blob): Promise<TileDetectionResponse> {
   const formData = new FormData();
   formData.append("file", imageBlob, "capture.jpg");
 

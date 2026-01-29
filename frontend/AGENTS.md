@@ -3,3 +3,15 @@ This is the frontend package for the riichi-app software. It's meant to run on t
 ## Best Practices
 
 Use heavy type safety.
+
+## Validation
+
+To validate your work, ALWAYS run the following commands:
+
+```
+npm run lint
+npm run format:check
+npm run test:e2e
+```
+
+If issues are found, fix them.

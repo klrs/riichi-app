@@ -22,8 +22,7 @@ function App() {
       const result = await detectTiles(imageBlob);
       setState({ status: "result", imageBlob, result });
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Detection failed";
+      const message = err instanceof Error ? err.message : "Detection failed";
       setState({ status: "error", message });
     }
   };
@@ -46,9 +45,7 @@ function App() {
           </div>
         )}
 
-        {state.status === "capturing" && (
-          <CameraCapture onCapture={handleCapture} />
-        )}
+        {state.status === "capturing" && <CameraCapture onCapture={handleCapture} />}
 
         {state.status === "detecting" && (
           <div className="detecting">

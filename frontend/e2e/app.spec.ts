@@ -27,17 +27,12 @@ async function mockCamera(page: Page, options: { shouldFail?: boolean } = {}) {
       };
 
       // Store original
-      const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(
-        navigator.mediaDevices
-      );
+      const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
 
       // Override getUserMedia
       navigator.mediaDevices.getUserMedia = async (constraints) => {
         if (shouldFail) {
-          throw new DOMException(
-            "Permission denied",
-            "NotAllowedError"
-          );
+          throw new DOMException("Permission denied", "NotAllowedError");
         }
 
         if (constraints?.video) {
@@ -48,7 +43,7 @@ async function mockCamera(page: Page, options: { shouldFail?: boolean } = {}) {
         return originalGetUserMedia(constraints);
       };
     },
-    { shouldFail: options.shouldFail }
+    { shouldFail: options.shouldFail },
   );
 }
 
@@ -57,7 +52,7 @@ async function mockCamera(page: Page, options: { shouldFail?: boolean } = {}) {
  */
 async function mockDetectionApi(
   page: Page,
-  options: { shouldFail?: boolean; delay?: number } = {}
+  options: { shouldFail?: boolean; delay?: number } = {},
 ) {
   await page.route("**/api/detect", async (route) => {
     if (options.delay) {
@@ -148,7 +143,9 @@ test.describe("Riichi Tile Detector App", () => {
 
     // Should show detecting state briefly
     // Then show results
-    await expect(page.getByRole("heading", { name: /Detected \d+ tiles/ })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("heading", { name: /Detected \d+ tiles/ })).toBeVisible({
+      timeout: 5000,
+    });
   });
 
   test("detection result page shows tiles list", async ({ page }) => {
@@ -160,7 +157,9 @@ test.describe("Riichi Tile Detector App", () => {
     await page.getByRole("button", { name: "Capture" }).click();
 
     // Wait for results
-    await expect(page.getByRole("heading", { name: "Detected 3 tiles" })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("heading", { name: "Detected 3 tiles" })).toBeVisible({
+      timeout: 5000,
+    });
 
     // Verify tiles are displayed
     await expect(page.getByText("Tiles Found:")).toBeVisible();
@@ -186,7 +185,9 @@ test.describe("Riichi Tile Detector App", () => {
     await page.getByRole("button", { name: "Capture" }).click();
 
     // Wait for results
-    await expect(page.getByRole("heading", { name: "Detected 3 tiles" })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("heading", { name: "Detected 3 tiles" })).toBeVisible({
+      timeout: 5000,
+    });
 
     // Click Take Another Photo
     await page.getByRole("button", { name: "Take Another Photo" }).click();
@@ -247,7 +248,9 @@ test.describe("Riichi Tile Detector App", () => {
     await page.getByRole("button", { name: "Capture" }).click();
 
     // Step 4: View results
-    await expect(page.getByRole("heading", { name: "Detected 3 tiles" })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("heading", { name: "Detected 3 tiles" })).toBeVisible({
+      timeout: 5000,
+    });
     await expect(page.locator("canvas.result-canvas")).toBeVisible();
 
     // Step 5: Take another photo

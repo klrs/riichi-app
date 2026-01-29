@@ -26,8 +26,7 @@ export function CameraCapture({ onCapture, disabled }: CameraCaptureProps) {
       setStream(mediaStream);
       setIsCameraActive(true);
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to access camera";
+      const message = err instanceof Error ? err.message : "Failed to access camera";
       setError(message);
       setIsCameraActive(false);
     }
@@ -64,7 +63,7 @@ export function CameraCapture({ onCapture, disabled }: CameraCaptureProps) {
         }
       },
       "image/jpeg",
-      0.9
+      0.9,
     );
   }, [onCapture, stopCamera]);
 
@@ -98,11 +97,7 @@ export function CameraCapture({ onCapture, disabled }: CameraCaptureProps) {
 
   if (!isCameraActive) {
     return (
-      <button
-        onClick={startCamera}
-        disabled={disabled}
-        className="start-camera-btn"
-      >
+      <button onClick={startCamera} disabled={disabled} className="start-camera-btn">
         Open Camera
       </button>
     );
