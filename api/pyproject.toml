@@ -7,11 +7,15 @@ requires-python = ">=3.12"
 dependencies = [
     "mahjong>=1.4.0",
     "ultralytics>=8.4.8",
+    "fastapi>=0.115.0",
+    "python-multipart>=0.0.9",
+    "uvicorn>=0.32.0",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
+    "httpx>=0.28.0",
 ]
 
 [tool.pytest.ini_options]

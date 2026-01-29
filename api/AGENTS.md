@@ -12,7 +12,13 @@ For removing a dependency, use `uv remove <dependency>`.
 
 To start the project, use `uv run main.py`.
 
-## Type Safety (Strict)
+## Best Practices
+
+### Tests
+
+For all code modules you add, make sure to add unit tests for them. For the tests place them to the same dir as the actual files themselves. Use the format `test_<file>.py`.
+
+### Type Safety (Strict)
 
 Write Python with maximum static type safety.
 
