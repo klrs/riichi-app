@@ -1,5 +1,6 @@
 import { useRef, useEffect, useMemo } from "react";
 import type { TileDetectionResponse } from "../types/api.ts";
+import { tileCodeToFontChar } from "../utils/TileFont.ts";
 
 interface DetectionResultProps {
   imageBlob: Blob;
@@ -29,7 +30,11 @@ function getColorForTile(code: string): string {
   return colorMap[suit] ?? COLORS[code.charCodeAt(0) % COLORS.length];
 }
 
-export function DetectionResult({ imageBlob, detectionResult, onReset }: DetectionResultProps) {
+export function DetectionResult({
+  imageBlob,
+  detectionResult,
+  onReset,
+}: DetectionResultProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageUrl = useMemo(() => URL.createObjectURL(imageBlob), [imageBlob]);
 
@@ -93,15 +98,21 @@ export function DetectionResult({ imageBlob, detectionResult, onReset }: Detecti
       <div className="tiles-list">
         <h3>Tiles Found:</h3>
         <ul>
-          {detectionResult.tiles.map((tile, index) => (
-            <li key={index} className="tile-item">
+          {detectionResult.tiles.map((tile) => (
+            <li
+              key={`${tile.code}-${tile.bbox.join("-")}`}
+              className="tile-item"
+            >
+              <span className="tile-icon">{tileCodeToFontChar(tile.code)}</span>
               <span
                 className="tile-color"
                 style={{ backgroundColor: getColorForTile(tile.code) }}
               />
               <span className="tile-code">{tile.code}</span>
               <span className="tile-name">{tile.name}</span>
-              <span className="tile-confidence">{(tile.confidence * 100).toFixed(1)}%</span>
+              <span className="tile-confidence">
+                {(tile.confidence * 100).toFixed(1)}%
+              </span>
             </li>
           ))}
         </ul>

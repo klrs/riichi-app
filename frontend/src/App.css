@@ -231,6 +231,13 @@
   border-bottom: 1px solid #eee;
 }
 
+.tile-icon {
+  font-family: "Tiles";
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
 .tile-color {
   width: 16px;
   height: 16px;
