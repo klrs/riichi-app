@@ -6,3 +6,5 @@ __pycache__
 model/data
 model/runs
 model/*.pt
+
+.env

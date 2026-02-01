@@ -1,7 +1,10 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import APIRouter, FastAPI, HTTPException, UploadFile
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from src.tile_detection import (
     DetectedTileResponse,
@@ -27,8 +30,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+# API router with /api prefix
+api_router = APIRouter(prefix="/api")
 
-@app.post("/detect", response_model=TileDetectionResponse)
+
+@api_router.post("/detect", response_model=TileDetectionResponse)
 async def detect(file: UploadFile) -> TileDetectionResponse:
     if file.content_type not in ALLOWED_CONTENT_TYPES:
         raise HTTPException(
@@ -62,6 +68,27 @@ async def detect(file: UploadFile) -> TileDetectionResponse:
 
     return TileDetectionResponse(tiles=response_tiles, count=len(response_tiles))
 
+
+@api_router.get("/up")
+async def health_check():
+    return {"status": "ok"}
+
+
+app.include_router(api_router)
+
+# Serve static frontend (only if static dir exists, i.e., in Docker)
+static_dir = Path(__file__).parent / "static"
+if static_dir.exists():
+    # Serve assets with caching
+    app.mount("/assets", StaticFiles(directory=static_dir / "assets"), name="assets")
+
+    # SPA fallback - serve index.html for all other routes
+    @app.get("/{path:path}")
+    async def serve_spa(path: str) -> FileResponse:
+        file_path = static_dir / path
+        if file_path.exists() and file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(static_dir / "index.html")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
