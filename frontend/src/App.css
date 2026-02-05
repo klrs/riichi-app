@@ -131,6 +131,48 @@
   background: #7f8c8d;
 }
 
+/* Input Divider */
+.input-divider {
+  color: #999;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+/* Drop Zone */
+.drop-zone {
+  display: block;
+  width: 100%;
+  font: inherit;
+  background: none;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 2rem;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.drop-zone:hover {
+  border-color: #3498db;
+  background: rgba(52, 152, 219, 0.05);
+}
+
+.drop-zone--active {
+  border-color: #3498db;
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.drop-zone--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.drop-zone-text {
+  margin: 0;
+  color: #666;
+}
+
 /* Detecting State */
 .detecting {
   display: flex;

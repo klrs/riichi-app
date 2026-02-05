@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CameraCapture } from "./components/CameraCapture.tsx";
+import { ImageDropZone } from "./components/ImageDropZone.tsx";
 import { DetectionResult } from "./components/DetectionResult.tsx";
 import { detectTiles } from "./api/detect.ts";
 import type { TileDetectionResponse } from "./types/api.ts";
@@ -40,8 +41,10 @@ function App() {
       <main className="app-main">
         {state.status === "idle" && (
           <div className="capture-section">
-            <p>Take a photo of mahjong tiles to detect them</p>
+            <p>Take a photo or drop an image of mahjong tiles to detect them</p>
             <CameraCapture onCapture={handleCapture} />
+            <div className="input-divider">or</div>
+            <ImageDropZone onDrop={handleCapture} />
           </div>
         )}
 

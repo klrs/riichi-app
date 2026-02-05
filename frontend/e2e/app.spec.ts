@@ -85,7 +85,7 @@ test.describe("Riichi Tile Detector App", () => {
     await page.goto("/");
 
     await expect(page.getByRole("heading", { name: "Riichi Tile Detector" })).toBeVisible();
-    await expect(page.getByText("Take a photo of mahjong tiles to detect them")).toBeVisible();
+    await expect(page.getByText("Take a photo or drop an image of mahjong tiles to detect them")).toBeVisible();
     await expect(page.getByRole("button", { name: "Open Camera" })).toBeVisible();
   });
 
@@ -194,7 +194,7 @@ test.describe("Riichi Tile Detector App", () => {
 
     // Should return to idle state
     await expect(page.getByRole("button", { name: "Open Camera" })).toBeVisible();
-    await expect(page.getByText("Take a photo of mahjong tiles to detect them")).toBeVisible();
+    await expect(page.getByText("Take a photo or drop an image of mahjong tiles to detect them")).toBeVisible();
   });
 
   test("shows error state when API fails", async ({ page }) => {
