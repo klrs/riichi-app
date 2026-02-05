@@ -33,7 +33,6 @@ app = FastAPI(lifespan=lifespan)
 # API router with /api prefix
 api_router = APIRouter(prefix="/api")
 
-
 @api_router.post("/detect", response_model=TileDetectionResponse)
 async def detect(file: UploadFile) -> TileDetectionResponse:
     if file.content_type not in ALLOWED_CONTENT_TYPES:
@@ -72,7 +71,6 @@ async def detect(file: UploadFile) -> TileDetectionResponse:
 @api_router.get("/up")
 async def health_check():
     return {"status": "ok"}
-
 
 app.include_router(api_router)
 
