@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect } from "react";
 import type { TileDetectionResponse } from "../types/api.ts";
 import { tileCodeToSvg } from "../utils/TileFont.ts";
 
@@ -32,11 +32,6 @@ function getColorForTile(code: string): string {
 
 export function DetectionResult({ imageBlob, detectionResult, onReset }: DetectionResultProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imageUrl = useMemo(() => URL.createObjectURL(imageBlob), [imageBlob]);
-
-  useEffect(() => {
-    return () => URL.revokeObjectURL(imageUrl);
-  }, [imageUrl]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -45,10 +40,15 @@ export function DetectionResult({ imageBlob, detectionResult, onReset }: Detecti
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    let cancelled = false;
+    const url = URL.createObjectURL(imageBlob);
     const img = new Image();
     img.onload = () => {
+      if (cancelled) return;
+
       canvas.width = img.width;
       canvas.height = img.height;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       ctx.drawImage(img, 0, 0);
 
@@ -77,8 +77,13 @@ export function DetectionResult({ imageBlob, detectionResult, onReset }: Detecti
         ctx.fillText(label, x1 + 4, labelY + fontSize);
       }
     };
-    img.src = imageUrl;
-  }, [imageUrl, detectionResult]);
+    img.src = url;
+
+    return () => {
+      cancelled = true;
+      URL.revokeObjectURL(url);
+    };
+  }, [imageBlob, detectionResult]);
 
   return (
     <div className="detection-result">

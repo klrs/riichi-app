@@ -242,6 +242,7 @@
   overflow: auto;
   border-radius: 8px;
   background: #000;
+  flex-shrink: 0;
 }
 
 .result-canvas {

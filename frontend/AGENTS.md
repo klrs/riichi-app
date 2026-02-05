@@ -6,6 +6,8 @@ Use heavy type safety. DON'T use `any` unless absolutely needed! When writing fu
 
 Write e2e tests for various features you code. E2E tests should be written with Playwright, and should be placed in the `@frontend/e2e` directory. If you need to mock e.g. API calls, use MSW library for this. The mocks are located in the `@frontend/e2e/mocks`
 
+The frontend should be ALWAYS built as a mobile-first application. This means designing the layout and components with mobile screens in mind.
+
 ## Validation
 
 To validate your work, ALWAYS run the following commands:
