@@ -7,3 +7,5 @@ Currently the monorepo includes the following packages:
 - `frontend`, a TypeScript Vite React project for the browser web app
 
 For whatever package you are working with, use the respective AGENTS.md file located in each package root.
+
+The riichi-app is currently deployed with Kamal. Kamal configuration can be found on @config/deploy.yml. The app is deployed on a virtual private server.

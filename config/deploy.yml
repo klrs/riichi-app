@@ -18,6 +18,8 @@ servers:
 #
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
+  host: riichi.kallerissanen.com
+  ssl: true
   app_port: 8000
   healthcheck:
     path: /api/up
