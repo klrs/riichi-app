@@ -1,8 +1,3 @@
-@font-face {
-  font-family: "Tiles";
-  src: url("/assets/Tiles-Regularv2.1-SVG.otf") format("otf");
-}
-
 * {
   box-sizing: border-box;
 }

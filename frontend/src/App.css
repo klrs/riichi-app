@@ -232,9 +232,8 @@
 }
 
 .tile-icon {
-  font-family: "Tiles";
-  font-size: 2rem;
-  line-height: 1;
+  width: 2rem;
+  height: auto;
   flex-shrink: 0;
 }
 

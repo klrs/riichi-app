@@ -1,6 +1,6 @@
 import { useRef, useEffect, useMemo } from "react";
 import type { TileDetectionResponse } from "../types/api.ts";
-import { tileCodeToFontChar } from "../utils/TileFont.ts";
+import { tileCodeToSvg } from "../utils/TileFont.ts";
 
 interface DetectionResultProps {
   imageBlob: Blob;
@@ -103,7 +103,7 @@ export function DetectionResult({
               key={`${tile.code}-${tile.bbox.join("-")}`}
               className="tile-item"
             >
-              <span className="tile-icon">{tileCodeToFontChar(tile.code)}</span>
+              <img className="tile-icon" src={tileCodeToSvg(tile.code) ?? undefined} alt={tile.code} />
               <span
                 className="tile-color"
                 style={{ backgroundColor: getColorForTile(tile.code) }}
