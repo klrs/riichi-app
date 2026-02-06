@@ -1,0 +1,173 @@
+.hand-confirmation {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Hand Grid */
+.hand-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 0.75rem;
+  flex-shrink: 0;
+  touch-action: none;
+}
+
+.hand-slot {
+  aspect-ratio: 2 / 3;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  padding: 2px;
+}
+
+.hand-slot:hover {
+  border-color: #3498db;
+}
+
+.hand-slot--selected {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.4);
+}
+
+.hand-slot--empty {
+  color: #bbb;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.hand-slot[draggable="true"] {
+  cursor: grab;
+}
+
+.hand-slot--dragging {
+  opacity: 0.4;
+}
+
+.hand-slot--drag-over {
+  border: 2px dashed #3498db;
+}
+
+.hand-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Tile Picker */
+.tile-picker {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 0.75rem;
+  min-height: 0;
+}
+
+.tile-picker-suit {
+  margin-bottom: 0.75rem;
+}
+
+.tile-picker-suit-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 0.25rem;
+  padding-left: 2px;
+}
+
+.tile-picker-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tile-picker-btn {
+  width: 40px;
+  height: 56px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  padding: 2px;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.tile-picker-btn:hover {
+  border-color: #3498db;
+  background: rgba(52, 152, 219, 0.05);
+}
+
+.tile-picker-btn:active {
+  background: rgba(52, 152, 219, 0.15);
+}
+
+.tile-picker-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Actions */
+.hand-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  flex-shrink: 0;
+  border-top: 1px solid #eee;
+}
+
+.hand-actions button {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.retake-btn {
+  background: #95a5a6;
+  color: white;
+}
+
+.retake-btn:hover {
+  background: #7f8c8d;
+}
+
+.clear-btn {
+  background: #e74c3c;
+  color: white;
+}
+
+.clear-btn:hover {
+  background: #c0392b;
+}
+
+.confirm-btn {
+  background: #27ae60;
+  color: white;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background: #219a52;
+}
+
+.confirm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

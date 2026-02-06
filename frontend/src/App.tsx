@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { CameraCapture } from "./components/CameraCapture.tsx";
 import { ImageDropZone } from "./components/ImageDropZone.tsx";
-import { DetectionResult } from "./components/DetectionResult.tsx";
+import { HandConfirmation } from "./components/HandConfirmation.tsx";
 import { detectTiles } from "./api/detect.ts";
-import type { TileDetectionResponse } from "./types/api.ts";
+import { handFromDetection } from "./utils/handFromDetection.ts";
+import type { HandSlot } from "./types/api.ts";
 import "./App.css";
 
 type AppState =
   | { status: "idle" }
   | { status: "capturing" }
   | { status: "detecting"; imageBlob: Blob }
-  | { status: "result"; imageBlob: Blob; result: TileDetectionResponse }
+  | { status: "confirming"; initialHand: HandSlot[] }
   | { status: "error"; message: string };
 
 function App() {
@@ -21,7 +22,8 @@ function App() {
 
     try {
       const result = await detectTiles(imageBlob);
-      setState({ status: "result", imageBlob, result });
+      const initialHand = handFromDetection(result);
+      setState({ status: "confirming", initialHand });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Detection failed";
       setState({ status: "error", message });
@@ -29,6 +31,10 @@ function App() {
   };
 
   const handleReset = () => {
+    setState({ status: "idle" });
+  };
+
+  const handleConfirm = (_hand: string[]) => {
     setState({ status: "idle" });
   };
 
@@ -57,11 +63,11 @@ function App() {
           </div>
         )}
 
-        {state.status === "result" && (
-          <DetectionResult
-            imageBlob={state.imageBlob}
-            detectionResult={state.result}
-            onReset={handleReset}
+        {state.status === "confirming" && (
+          <HandConfirmation
+            initialHand={state.initialHand}
+            onConfirm={handleConfirm}
+            onRetake={handleReset}
           />
         )}
 

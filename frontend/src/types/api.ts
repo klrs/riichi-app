@@ -1,3 +1,6 @@
+export type TileCode = string;
+export type HandSlot = TileCode | null;
+
 export interface DetectedTile {
   code: string;
   confidence: number;

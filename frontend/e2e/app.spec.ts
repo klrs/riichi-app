@@ -1,5 +1,4 @@
 import { test, expect, Page } from "@playwright/test";
-import { mockDetectionResponse } from "./mocks/handlers";
 
 /**
  * Mock camera setup for Playwright tests.
@@ -67,6 +66,7 @@ async function mockDetectionApi(
       });
     }
 
+    const { mockDetectionResponse } = await import("./mocks/handlers");
     return route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -85,7 +85,9 @@ test.describe("Riichi Tile Detector App", () => {
     await page.goto("/");
 
     await expect(page.getByRole("heading", { name: "Riichi Tile Detector" })).toBeVisible();
-    await expect(page.getByText("Take a photo or drop an image of mahjong tiles to detect them")).toBeVisible();
+    await expect(
+      page.getByText("Take a photo or drop an image of mahjong tiles to detect them"),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "Open Camera" })).toBeVisible();
   });
 
@@ -129,7 +131,7 @@ test.describe("Riichi Tile Detector App", () => {
     await expect(page.locator("video.camera-preview")).not.toBeVisible();
   });
 
-  test("Capture sends image to API and shows detection results", async ({ page }) => {
+  test("Capture sends image to API and shows hand confirmation", async ({ page }) => {
     await page.goto("/");
 
     // Open camera
@@ -141,14 +143,13 @@ test.describe("Riichi Tile Detector App", () => {
     // Capture image
     await page.getByRole("button", { name: "Capture" }).click();
 
-    // Should show detecting state briefly
-    // Then show results
-    await expect(page.getByRole("heading", { name: /Detected \d+ tiles/ })).toBeVisible({
-      timeout: 5000,
-    });
+    // Should show hand confirmation screen
+    await expect(page.getByTestId("hand-grid")).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("button", { name: "Confirm Hand" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Retake" })).toBeVisible();
   });
 
-  test("detection result page shows tiles list", async ({ page }) => {
+  test("hand confirmation shows detected tiles in slots", async ({ page }) => {
     await page.goto("/");
 
     // Complete capture flow
@@ -156,27 +157,18 @@ test.describe("Riichi Tile Detector App", () => {
     await expect(page.getByRole("button", { name: "Capture" })).toBeVisible({ timeout: 5000 });
     await page.getByRole("button", { name: "Capture" }).click();
 
-    // Wait for results
-    await expect(page.getByRole("heading", { name: "Detected 3 tiles" })).toBeVisible({
-      timeout: 5000,
-    });
+    // Wait for hand confirmation
+    await expect(page.getByTestId("hand-grid")).toBeVisible({ timeout: 5000 });
 
-    // Verify tiles are displayed
-    await expect(page.getByText("Tiles Found:")).toBeVisible();
-    await expect(page.getByText("1m")).toBeVisible();
-    await expect(page.getByText("5p")).toBeVisible();
-    await expect(page.getByText("9s")).toBeVisible();
+    // The 3-tile mock should populate 3 slots, leaving 11 empty
+    // Verify tile picker is visible
+    await expect(page.getByTestId("tile-picker")).toBeVisible();
 
-    // Verify tile names are shown
-    await expect(page.getByText("1 Man")).toBeVisible();
-    await expect(page.getByText("5 Pin")).toBeVisible();
-    await expect(page.getByText("9 Sou")).toBeVisible();
-
-    // Verify Take Another Photo button is present
-    await expect(page.getByRole("button", { name: "Take Another Photo" })).toBeVisible();
+    // Confirm button should be disabled (only 3 of 14 tiles)
+    await expect(page.getByRole("button", { name: "Confirm Hand" })).toBeDisabled();
   });
 
-  test("Take Another Photo button returns to idle state", async ({ page }) => {
+  test("Retake button returns to idle state", async ({ page }) => {
     await page.goto("/");
 
     // Complete capture flow
@@ -184,17 +176,17 @@ test.describe("Riichi Tile Detector App", () => {
     await expect(page.getByRole("button", { name: "Capture" })).toBeVisible({ timeout: 5000 });
     await page.getByRole("button", { name: "Capture" }).click();
 
-    // Wait for results
-    await expect(page.getByRole("heading", { name: "Detected 3 tiles" })).toBeVisible({
-      timeout: 5000,
-    });
+    // Wait for hand confirmation
+    await expect(page.getByTestId("hand-grid")).toBeVisible({ timeout: 5000 });
 
-    // Click Take Another Photo
-    await page.getByRole("button", { name: "Take Another Photo" }).click();
+    // Click Retake
+    await page.getByRole("button", { name: "Retake" }).click();
 
     // Should return to idle state
     await expect(page.getByRole("button", { name: "Open Camera" })).toBeVisible();
-    await expect(page.getByText("Take a photo or drop an image of mahjong tiles to detect them")).toBeVisible();
+    await expect(
+      page.getByText("Take a photo or drop an image of mahjong tiles to detect them"),
+    ).toBeVisible();
   });
 
   test("shows error state when API fails", async ({ page }) => {
@@ -233,7 +225,7 @@ test.describe("Riichi Tile Detector App", () => {
     await expect(page.getByRole("button", { name: "Open Camera" })).toBeVisible();
   });
 
-  test("full user flow: capture, view results, take another photo", async ({ page }) => {
+  test("full user flow: capture, confirm hand, return to idle", async ({ page }) => {
     await page.goto("/");
 
     // Step 1: Initial state
@@ -247,14 +239,12 @@ test.describe("Riichi Tile Detector App", () => {
     await expect(page.getByRole("button", { name: "Capture" })).toBeVisible({ timeout: 5000 });
     await page.getByRole("button", { name: "Capture" }).click();
 
-    // Step 4: View results
-    await expect(page.getByRole("heading", { name: "Detected 3 tiles" })).toBeVisible({
-      timeout: 5000,
-    });
-    await expect(page.locator("canvas.result-canvas")).toBeVisible();
+    // Step 4: Hand confirmation screen
+    await expect(page.getByTestId("hand-grid")).toBeVisible({ timeout: 5000 });
+    await expect(page.getByTestId("tile-picker")).toBeVisible();
 
-    // Step 5: Take another photo
-    await page.getByRole("button", { name: "Take Another Photo" }).click();
+    // Step 5: Retake returns to idle
+    await page.getByRole("button", { name: "Retake" }).click();
     await expect(page.getByRole("button", { name: "Open Camera" })).toBeVisible();
 
     // Step 6: Can start again
