@@ -8,4 +8,4 @@ Currently the monorepo includes the following packages:
 
 For whatever package you are working with, read the respective AGENTS.md file located in each package root for extra instructions.
 
-The riichi-app is currently deployed with Kamal. Kamal configuration can be found on @config/deploy.yml. The app is deployed on a virtual private server.
+The riichi-app is currently deployed with Kamal to a virtual private server. Kamal configuration can be found on @config/deploy.yml.
