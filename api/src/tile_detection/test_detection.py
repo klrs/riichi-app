@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from src.tile import DetectedTile
-from src.tile_detection.detection import decode_image, detect_tiles
+from src.tile_detection.detection import decode_image, detect_tiles, sort_tiles
 
 
 class TestDecodeImage:
@@ -166,3 +166,72 @@ class TestDetectTiles:
         tiles = detect_tiles(mock_model, image)
 
         assert all(isinstance(tile, DetectedTile) for tile in tiles)
+
+
+class TestSortTiles:
+    def _tile(self, code: str, bbox: tuple[int, int, int, int]) -> DetectedTile:
+        return DetectedTile(code=code, confidence=0.9, bbox=bbox)
+
+    def test_empty_list(self):
+        assert sort_tiles([]) == []
+
+    def test_single_tile(self):
+        tile = self._tile("1m", (10, 100, 50, 200))
+        assert sort_tiles([tile]) == [tile]
+
+    def test_row_aligned_sorts_by_x(self):
+        """Tiles in a horizontal row should be sorted left-to-right."""
+        t1 = self._tile("3m", (300, 100, 350, 200))
+        t2 = self._tile("1m", (100, 105, 150, 205))
+        t3 = self._tile("2m", (200, 102, 250, 202))
+        result = sort_tiles([t1, t2, t3])
+        assert [t.code for t in result] == ["1m", "2m", "3m"]
+
+    def test_scattered_falls_back_to_suit_order(self):
+        """Tiles spread across the image should be sorted by suit then number."""
+        t1 = self._tile("7z", (100, 500, 150, 600))
+        t2 = self._tile("1m", (400, 100, 450, 200))
+        t3 = self._tile("5s", (200, 300, 250, 400))
+        result = sort_tiles([t1, t2, t3])
+        assert [t.code for t in result] == ["1m", "5s", "7z"]
+
+    def test_suit_order_ascending(self):
+        """Within suit fallback: m < p < s < z, then by number."""
+        t1 = self._tile("3p", (100, 500, 150, 600))
+        t2 = self._tile("1p", (200, 100, 250, 200))
+        t3 = self._tile("9m", (300, 300, 350, 400))
+        result = sort_tiles([t1, t2, t3])
+        assert [t.code for t in result] == ["9m", "1p", "3p"]
+
+    def test_red_five_sorts_as_five(self):
+        """Red fives (0m/0p/0s) should sort at position 5 in their suit."""
+        t1 = self._tile("6m", (100, 500, 150, 600))
+        t2 = self._tile("0m", (200, 100, 250, 200))
+        t3 = self._tile("4m", (300, 300, 350, 400))
+        result = sort_tiles([t1, t2, t3])
+        assert [t.code for t in result] == ["4m", "0m", "6m"]
+
+    def test_detect_tiles_returns_sorted(self):
+        """detect_tiles should return sorted results."""
+        mock_model = MagicMock()
+        # Create boxes out of x-order but in a row (same y)
+        box1 = MagicMock()
+        box1.cls = [0]
+        box1.conf = [0.9]
+        box1.xyxy = [MagicMock()]
+        box1.xyxy[0].tolist.return_value = [300, 100, 350, 200]
+
+        box2 = MagicMock()
+        box2.cls = [1]
+        box2.conf = [0.9]
+        box2.xyxy = [MagicMock()]
+        box2.xyxy[0].tolist.return_value = [100, 100, 150, 200]
+
+        result = MagicMock()
+        result.boxes = [box1, box2]
+        result.names = {0: "5p", 1: "1m"}
+        mock_model.return_value = [result]
+
+        image = np.zeros((300, 400, 3), dtype=np.uint8)
+        tiles = detect_tiles(mock_model, image)
+        assert [t.code for t in tiles] == ["1m", "5p"]
