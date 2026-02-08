@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 /**
  * Mock camera setup for Playwright tests.
@@ -29,7 +29,7 @@ async function mockCamera(page: Page, options: { shouldFail?: boolean } = {}) {
       const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
 
       // Override getUserMedia
-      navigator.mediaDevices.getUserMedia = async (constraints) => {
+      navigator.mediaDevices.getUserMedia = async (constraints: MediaStreamConstraints) => {
         if (shouldFail) {
           throw new DOMException("Permission denied", "NotAllowedError");
         }

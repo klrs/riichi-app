@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import type { TileDetectionResponse } from "../../src/types/api";
+import type { TileDetectionResponse, HandEvaluationResponse } from "../../src/types/api";
 
 export const mockDetectionResponse: TileDetectionResponse = {
   count: 3,
@@ -181,6 +181,172 @@ export const mockFullHandResponse: TileDetectionResponse = {
       number: 7,
     },
   ],
+};
+
+// A 14-tile winning hand: east triplet + sequences + 9m pair
+export const mockWinningHandResponse: TileDetectionResponse = {
+  count: 14,
+  tiles: [
+    {
+      code: "1z",
+      confidence: 0.95,
+      bbox: [10, 100, 50, 250],
+      name: "East",
+      is_red_five: false,
+      is_back: false,
+      suit: "z",
+      number: 1,
+    },
+    {
+      code: "1z",
+      confidence: 0.94,
+      bbox: [60, 100, 100, 250],
+      name: "East",
+      is_red_five: false,
+      is_back: false,
+      suit: "z",
+      number: 1,
+    },
+    {
+      code: "1z",
+      confidence: 0.93,
+      bbox: [110, 100, 150, 250],
+      name: "East",
+      is_red_five: false,
+      is_back: false,
+      suit: "z",
+      number: 1,
+    },
+    {
+      code: "2m",
+      confidence: 0.92,
+      bbox: [160, 100, 200, 250],
+      name: "2 Man",
+      is_red_five: false,
+      is_back: false,
+      suit: "m",
+      number: 2,
+    },
+    {
+      code: "3m",
+      confidence: 0.91,
+      bbox: [210, 100, 250, 250],
+      name: "3 Man",
+      is_red_five: false,
+      is_back: false,
+      suit: "m",
+      number: 3,
+    },
+    {
+      code: "4m",
+      confidence: 0.9,
+      bbox: [260, 100, 300, 250],
+      name: "4 Man",
+      is_red_five: false,
+      is_back: false,
+      suit: "m",
+      number: 4,
+    },
+    {
+      code: "5p",
+      confidence: 0.89,
+      bbox: [310, 100, 350, 250],
+      name: "5 Pin",
+      is_red_five: false,
+      is_back: false,
+      suit: "p",
+      number: 5,
+    },
+    {
+      code: "6p",
+      confidence: 0.88,
+      bbox: [360, 100, 400, 250],
+      name: "6 Pin",
+      is_red_five: false,
+      is_back: false,
+      suit: "p",
+      number: 6,
+    },
+    {
+      code: "7p",
+      confidence: 0.87,
+      bbox: [410, 100, 450, 250],
+      name: "7 Pin",
+      is_red_five: false,
+      is_back: false,
+      suit: "p",
+      number: 7,
+    },
+    {
+      code: "2s",
+      confidence: 0.86,
+      bbox: [460, 100, 500, 250],
+      name: "2 Sou",
+      is_red_five: false,
+      is_back: false,
+      suit: "s",
+      number: 2,
+    },
+    {
+      code: "3s",
+      confidence: 0.85,
+      bbox: [510, 100, 550, 250],
+      name: "3 Sou",
+      is_red_five: false,
+      is_back: false,
+      suit: "s",
+      number: 3,
+    },
+    {
+      code: "4s",
+      confidence: 0.84,
+      bbox: [560, 100, 600, 250],
+      name: "4 Sou",
+      is_red_five: false,
+      is_back: false,
+      suit: "s",
+      number: 4,
+    },
+    {
+      code: "9m",
+      confidence: 0.83,
+      bbox: [610, 100, 650, 250],
+      name: "9 Man",
+      is_red_five: false,
+      is_back: false,
+      suit: "m",
+      number: 9,
+    },
+    {
+      code: "9m",
+      confidence: 0.82,
+      bbox: [660, 100, 700, 250],
+      name: "9 Man",
+      is_red_five: false,
+      is_back: false,
+      suit: "m",
+      number: 9,
+    },
+  ],
+};
+
+export const mockEvaluateSuccessResponse: HandEvaluationResponse = {
+  han: 2,
+  fu: 40,
+  yaku: [
+    { name: "Yakuhai (wind of place)", han_value: 1, is_yakuman: false },
+    { name: "Yakuhai (wind of round)", han_value: 1, is_yakuman: false },
+  ],
+  cost: { main: 3900, additional: 0 },
+  error: null,
+};
+
+export const mockEvaluateNoYakuResponse: HandEvaluationResponse = {
+  han: null,
+  fu: null,
+  yaku: null,
+  cost: null,
+  error: "no_yaku",
 };
 
 export const handlers = [

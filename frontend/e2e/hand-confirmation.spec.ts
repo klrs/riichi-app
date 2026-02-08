@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import type { TileDetectionResponse } from "../src/types/api";
 import { mockFullHandResponse, mockDetectionResponse } from "./mocks/handlers";
 
@@ -18,7 +18,7 @@ async function mockCamera(page: Page) {
     };
 
     const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-    navigator.mediaDevices.getUserMedia = async (constraints) => {
+    navigator.mediaDevices.getUserMedia = async (constraints: MediaStreamConstraints) => {
       if (constraints?.video) {
         const track = createFakeVideoTrack();
         return new MediaStream([track]);
@@ -71,12 +71,15 @@ test.describe("Hand Confirmation", () => {
       await expect(page.getByRole("button", { name: "Confirm Hand" })).toBeEnabled();
     });
 
-    test("confirm button returns to idle", async ({ page }) => {
+    test("confirm button transitions to scoring screen", async ({ page }) => {
       await navigateToHandConfirmation(page);
 
       await page.getByRole("button", { name: "Confirm Hand" }).click();
 
-      await expect(page.getByRole("button", { name: "Open Camera" })).toBeVisible();
+      // Should show the scoring screen, not idle
+      await expect(page.getByText("Win type")).toBeVisible();
+      await expect(page.getByRole("button", { name: "Calculate" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Back" })).toBeVisible();
     });
 
     test("can select a slot and replace its tile", async ({ page }) => {

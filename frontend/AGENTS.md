@@ -1,5 +1,7 @@
 This is the frontend package for the riichi-app software. It's meant to run on the user's browser. It's a Vite project, React with TypeScript.
 
+This AGENTS.md file should always be applied when writing code for the `frontend` package in the monorepo!
+
 ## Best Practices
 
 Use heavy type safety. DON'T use `any` unless absolutely needed! When writing functions, use the arrow syntax instead of the method syntax.
@@ -8,9 +10,13 @@ Write e2e tests for various features you code. E2E tests should be written with 
 
 The frontend should be ALWAYS built as a mobile-first application. This means designing the layout and components with mobile screens in mind.
 
+## Writing tests
+
+For any new features you add, you should
+
 ## Validation
 
-To validate your work, ALWAYS run the following commands:
+To validate your work, ALWAYS run the following commands before finishing up on new code or feature:
 
 ```
 npm run build

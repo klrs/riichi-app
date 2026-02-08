@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CameraCapture } from "./components/CameraCapture.tsx";
 import { ImageDropZone } from "./components/ImageDropZone.tsx";
 import { HandConfirmation } from "./components/HandConfirmation.tsx";
+import { HandScoring } from "./components/HandScoring.tsx";
 import { detectTiles } from "./api/detect.ts";
 import { handFromDetection } from "./utils/handFromDetection.ts";
 import type { HandSlot } from "./types/api.ts";
@@ -12,6 +13,7 @@ type AppState =
   | { status: "capturing" }
   | { status: "detecting"; imageBlob: Blob }
   | { status: "confirming"; initialHand: HandSlot[] }
+  | { status: "scoring"; hand: string[] }
   | { status: "error"; message: string };
 
 function App() {
@@ -34,8 +36,8 @@ function App() {
     setState({ status: "idle" });
   };
 
-  const handleConfirm = (_hand: string[]) => {
-    setState({ status: "idle" });
+  const handleConfirm = (hand: string[]) => {
+    setState({ status: "scoring", hand });
   };
 
   return (
@@ -54,7 +56,9 @@ function App() {
           </div>
         )}
 
-        {state.status === "capturing" && <CameraCapture onCapture={handleCapture} />}
+        {state.status === "capturing" && (
+          <CameraCapture onCapture={handleCapture} />
+        )}
 
         {state.status === "detecting" && (
           <div className="detecting">
@@ -69,6 +73,10 @@ function App() {
             onConfirm={handleConfirm}
             onRetake={handleReset}
           />
+        )}
+
+        {state.status === "scoring" && (
+          <HandScoring hand={state.hand} onBack={handleReset} />
         )}
 
         {state.status === "error" && (

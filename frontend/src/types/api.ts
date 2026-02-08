@@ -16,3 +16,31 @@ export interface TileDetectionResponse {
   tiles: DetectedTile[];
   count: number;
 }
+
+export interface HandEvaluationRequest {
+  tiles: string[];
+  win_tile_index: number;
+  is_tsumo: boolean;
+  seat_wind: "east" | "south" | "west" | "north";
+  round_wind: "east" | "south" | "west" | "north";
+  is_riichi: boolean;
+}
+
+export interface YakuResult {
+  name: string;
+  han_value: number;
+  is_yakuman: boolean;
+}
+
+export interface CostResult {
+  main: number;
+  additional: number;
+}
+
+export interface HandEvaluationResponse {
+  han: number | null;
+  fu: number | null;
+  yaku: YakuResult[] | null;
+  cost: CostResult | null;
+  error: string | null;
+}

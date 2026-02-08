@@ -6,6 +6,11 @@ from fastapi import APIRouter, FastAPI, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from src.hand_calculation import (
+    HandEvaluationRequest,
+    HandEvaluationResponse,
+    evaluate_hand,
+)
 from src.tile_detection import (
     DetectedTileResponse,
     TileDetectionResponse,
@@ -66,6 +71,11 @@ async def detect(file: UploadFile) -> TileDetectionResponse:
     ]
 
     return TileDetectionResponse(tiles=response_tiles, count=len(response_tiles))
+
+
+@api_router.post("/hand/evaluate", response_model=HandEvaluationResponse)
+async def hand_evaluate(request: HandEvaluationRequest) -> HandEvaluationResponse:
+    return evaluate_hand(request)
 
 
 @api_router.get("/up")
