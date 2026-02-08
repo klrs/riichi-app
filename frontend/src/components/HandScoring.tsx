@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { evaluateHand } from "../api/evaluate.ts";
-import type { HandEvaluationResponse } from "../types/api.ts";
+import type { HandEvaluationResponse, MeldInfo } from "../types/api.ts";
 import { tileCodeToSvg } from "../utils/TileFont.ts";
 import "./HandScoring.css";
 
@@ -8,10 +8,14 @@ type Wind = "east" | "south" | "west" | "north";
 
 interface HandScoringProps {
   hand: string[];
+  melds: MeldInfo[];
+  flippedIndices: number[];
   onBack: () => void;
 }
 
-export const HandScoring = ({ hand, onBack }: HandScoringProps) => {
+export const HandScoring = ({ hand, melds, flippedIndices, onBack }: HandScoringProps) => {
+  const isOpenHand = melds.length > 0;
+  const flippedSet = new Set(flippedIndices);
   const [winTileIndex, setWinTileIndex] = useState<number | null>(null);
   const [isTsumo, setIsTsumo] = useState(false);
   const [seatWind, setSeatWind] = useState<Wind>("east");
@@ -35,7 +39,8 @@ export const HandScoring = ({ hand, onBack }: HandScoringProps) => {
         is_tsumo: isTsumo,
         seat_wind: seatWind,
         round_wind: roundWind,
-        is_riichi: isRiichi,
+        is_riichi: isOpenHand ? false : isRiichi,
+        melds,
       });
       setResult(response);
     } catch (err) {
@@ -55,7 +60,7 @@ export const HandScoring = ({ hand, onBack }: HandScoringProps) => {
           return (
             <button
               key={`tile-${i}`}
-              className={`scoring-tile${i === winTileIndex ? " scoring-tile--win" : ""}`}
+              className={`scoring-tile${i === winTileIndex ? " scoring-tile--win" : ""}${flippedSet.has(i) ? " scoring-tile--flipped" : ""}`}
               onClick={() => setWinTileIndex(i)}
               aria-label={`${tile}${i === winTileIndex ? " (win tile)" : ""}`}
             >
@@ -120,14 +125,16 @@ export const HandScoring = ({ hand, onBack }: HandScoringProps) => {
           <span className="option-label">Riichi</span>
           <div className="toggle-group">
             <button
-              className={`toggle-btn${!isRiichi ? " toggle-btn--active" : ""}`}
-              onClick={() => setIsRiichi(false)}
+              className={`toggle-btn${!isRiichi || isOpenHand ? " toggle-btn--active" : ""}${isOpenHand ? " toggle-btn--disabled" : ""}`}
+              onClick={() => !isOpenHand && setIsRiichi(false)}
+              disabled={isOpenHand}
             >
               No
             </button>
             <button
-              className={`toggle-btn${isRiichi ? " toggle-btn--active" : ""}`}
-              onClick={() => setIsRiichi(true)}
+              className={`toggle-btn${isRiichi && !isOpenHand ? " toggle-btn--active" : ""}${isOpenHand ? " toggle-btn--disabled" : ""}`}
+              onClick={() => !isOpenHand && setIsRiichi(true)}
+              disabled={isOpenHand}
             >
               Yes
             </button>

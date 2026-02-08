@@ -1,11 +1,13 @@
 from mahjong.constants import EAST, NORTH, SOUTH, WEST
 from mahjong.hand_calculating.hand import HandCalculator
 from mahjong.hand_calculating.hand_config import HandConfig, OptionalRules
+from mahjong.meld import Meld
 
 from src.hand_calculation.schemas import (
     CostResult,
     HandEvaluationRequest,
     HandEvaluationResponse,
+    MeldInfo,
     YakuResult,
 )
 
@@ -66,7 +68,26 @@ def tile_codes_to_136(codes: list[str]) -> list[int]:
     return result
 
 
+MELD_TYPE_MAP = {
+    "chi": Meld.CHI,
+    "pon": Meld.PON,
+}
+
 _calculator = HandCalculator()
+
+
+def _build_melds(meld_infos: list[MeldInfo]) -> list[Meld]:
+    """Convert MeldInfo objects to mahjong library Meld objects."""
+    melds = []
+    for info in meld_infos:
+        tiles_136 = tile_codes_to_136(info.tiles)
+        meld = Meld(
+            meld_type=MELD_TYPE_MAP[info.type],
+            tiles=tiles_136,
+            opened=True,
+        )
+        melds.append(meld)
+    return melds
 
 
 def evaluate_hand(request: HandEvaluationRequest) -> HandEvaluationResponse:
@@ -74,15 +95,20 @@ def evaluate_hand(request: HandEvaluationRequest) -> HandEvaluationResponse:
     tiles_136 = tile_codes_to_136(request.tiles)
     win_tile_136 = tiles_136[request.win_tile_index]
 
+    melds = _build_melds(request.melds)
+    is_open_hand = len(melds) > 0
+
     config = HandConfig(
         is_tsumo=request.is_tsumo,
-        is_riichi=request.is_riichi,
+        is_riichi=request.is_riichi if not is_open_hand else False,
         player_wind=WIND_MAP[request.seat_wind],
         round_wind=WIND_MAP[request.round_wind],
-        options=OptionalRules(has_aka_dora=True),
+        options=OptionalRules(has_aka_dora=True, has_open_tanyao=True),
     )
 
-    result = _calculator.estimate_hand_value(tiles_136, win_tile_136, config=config)
+    result = _calculator.estimate_hand_value(
+        tiles_136, win_tile_136, melds=melds, config=config
+    )
 
     if result.error:
         return HandEvaluationResponse(
@@ -92,7 +118,7 @@ def evaluate_hand(request: HandEvaluationRequest) -> HandEvaluationResponse:
     yaku_list = [
         YakuResult(
             name=y.name,
-            han_value=y.han_closed if y.han_closed else y.han_open,
+            han_value=y.han_open if is_open_hand and y.han_open else y.han_closed,
             is_yakuman=y.is_yakuman,
         )
         for y in result.yaku

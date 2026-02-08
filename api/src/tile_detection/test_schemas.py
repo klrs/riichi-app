@@ -13,6 +13,7 @@ class TestDetectedTileResponse:
             name="1 MAN",
             is_red_five=False,
             is_back=False,
+            is_rotated=False,
             suit="m",
             number=1,
         )
@@ -22,6 +23,7 @@ class TestDetectedTileResponse:
         assert tile.name == "1 MAN"
         assert tile.is_red_five is False
         assert tile.is_back is False
+        assert tile.is_rotated is False
         assert tile.suit == "m"
         assert tile.number == 1
 
@@ -33,6 +35,7 @@ class TestDetectedTileResponse:
             name="RED 5 PIN",
             is_red_five=True,
             is_back=False,
+            is_rotated=False,
             suit="p",
             number=5,
         )
@@ -48,6 +51,7 @@ class TestDetectedTileResponse:
             name="BACK",
             is_red_five=False,
             is_back=True,
+            is_rotated=False,
             suit=None,
             number=None,
         )
@@ -63,6 +67,7 @@ class TestDetectedTileResponse:
             name="EAST",
             is_red_five=False,
             is_back=False,
+            is_rotated=False,
             suit="z",
             number=1,
         )
@@ -107,6 +112,7 @@ class TestTileDetectionResponse:
                 name="1 MAN",
                 is_red_five=False,
                 is_back=False,
+                is_rotated=False,
                 suit="m",
                 number=1,
             ),
@@ -117,6 +123,7 @@ class TestTileDetectionResponse:
                 name="2 MAN",
                 is_red_five=False,
                 is_back=False,
+                is_rotated=False,
                 suit="m",
                 number=2,
             ),

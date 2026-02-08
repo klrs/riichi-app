@@ -8,6 +8,7 @@ export interface DetectedTile {
   name: string;
   is_red_five: boolean;
   is_back: boolean;
+  is_rotated: boolean;
   suit: string | null;
   number: number | null;
 }
@@ -17,6 +18,13 @@ export interface TileDetectionResponse {
   count: number;
 }
 
+export type MeldType = "chi" | "pon";
+
+export interface MeldInfo {
+  type: MeldType;
+  tiles: string[];
+}
+
 export interface HandEvaluationRequest {
   tiles: string[];
   win_tile_index: number;
@@ -24,6 +32,7 @@ export interface HandEvaluationRequest {
   seat_wind: "east" | "south" | "west" | "north";
   round_wind: "east" | "south" | "west" | "north";
   is_riichi: boolean;
+  melds: MeldInfo[];
 }
 
 export interface YakuResult {

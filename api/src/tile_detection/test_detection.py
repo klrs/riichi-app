@@ -156,6 +156,34 @@ class TestDetectTiles:
         assert tiles[0].code == "7z"
         assert tiles[0].name == "CHUN"
 
+    def test_detect_rotated_tile(self):
+        """A tile with landscape bbox (wider than tall) should be detected as rotated."""
+        mock_model = MagicMock()
+        # Landscape bbox: width=70, height=50 → rotated
+        mock_box = self._create_mock_box(0, 0.95, [10, 20, 80, 70])
+        mock_result = self._create_mock_result([mock_box], {0: "1m"})
+        mock_model.return_value = [mock_result]
+
+        image = np.zeros((100, 100, 3), dtype=np.uint8)
+        tiles = detect_tiles(mock_model, image)
+
+        assert len(tiles) == 1
+        assert tiles[0].is_rotated is True
+
+    def test_detect_upright_tile(self):
+        """A tile with portrait bbox (taller than wide) should not be detected as rotated."""
+        mock_model = MagicMock()
+        # Portrait bbox: width=20, height=20 → not rotated
+        mock_box = self._create_mock_box(0, 0.95, [10, 20, 30, 40])
+        mock_result = self._create_mock_result([mock_box], {0: "1m"})
+        mock_model.return_value = [mock_result]
+
+        image = np.zeros((100, 100, 3), dtype=np.uint8)
+        tiles = detect_tiles(mock_model, image)
+
+        assert len(tiles) == 1
+        assert tiles[0].is_rotated is False
+
     def test_returns_detected_tile_instances(self):
         mock_model = MagicMock()
         mock_box = self._create_mock_box(0, 0.95, [10, 20, 30, 40])

@@ -1,12 +1,14 @@
 import { useState, useRef } from "react";
-import type { HandSlot } from "../types/api.ts";
+import type { HandSlot, MeldInfo } from "../types/api.ts";
 import { HAND_SIZE, SUIT_DEFINITIONS } from "../constants/tiles.ts";
 import { tileCodeToSvg } from "../utils/TileFont.ts";
+import { inferMelds } from "../utils/meldInference.ts";
 import "./HandConfirmation.css";
 
 interface HandConfirmationProps {
   initialHand: HandSlot[];
-  onConfirm: (hand: string[]) => void;
+  initialFlippedIndices: number[];
+  onConfirm: (hand: string[], melds: MeldInfo[], flippedIndices: number[]) => void;
   onRetake: () => void;
 }
 
@@ -15,11 +17,13 @@ const findFirstEmptyIndex = (hand: HandSlot[]): number => {
   return idx === -1 ? 0 : idx;
 };
 
-export const HandConfirmation = ({ initialHand, onConfirm, onRetake }: HandConfirmationProps) => {
+export const HandConfirmation = ({ initialHand, initialFlippedIndices, onConfirm, onRetake }: HandConfirmationProps) => {
   const [hand, setHand] = useState<HandSlot[]>(initialHand);
   const [selectedIndex, setSelectedIndex] = useState<number>(findFirstEmptyIndex(initialHand));
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [flippedIndices, setFlippedIndices] = useState<Set<number>>(new Set(initialFlippedIndices));
+  const [meldError, setMeldError] = useState<string | null>(null);
   const dragIndexRef = useRef<number | null>(null);
   const dragOverIndexRef = useRef<number | null>(null);
 
@@ -48,6 +52,21 @@ export const HandConfirmation = ({ initialHand, onConfirm, onRetake }: HandConfi
     next.splice(to, 0, moved);
     setHand(next);
     setSelectedIndex(to);
+
+    // Remap flipped indices to follow tiles after reorder
+    const newFlipped = new Set<number>();
+    for (const idx of flippedIndices) {
+      let newIdx = idx;
+      if (idx === from) {
+        newIdx = to;
+      } else if (from < to) {
+        if (idx > from && idx <= to) newIdx = idx - 1;
+      } else {
+        if (idx >= to && idx < from) newIdx = idx + 1;
+      }
+      newFlipped.add(newIdx);
+    }
+    setFlippedIndices(newFlipped);
   };
 
   const clearDragState = () => {
@@ -109,12 +128,37 @@ export const HandConfirmation = ({ initialHand, onConfirm, onRetake }: HandConfi
     const next = [...hand];
     next[selectedIndex] = null;
     setHand(next);
+
+    if (flippedIndices.has(selectedIndex)) {
+      const newFlipped = new Set(flippedIndices);
+      newFlipped.delete(selectedIndex);
+      setFlippedIndices(newFlipped);
+    }
+  };
+
+  const handleFlip = () => {
+    const newFlipped = new Set(flippedIndices);
+    if (newFlipped.has(selectedIndex)) {
+      newFlipped.delete(selectedIndex);
+    } else {
+      newFlipped.add(selectedIndex);
+    }
+    setFlippedIndices(newFlipped);
+    setMeldError(null);
   };
 
   const handleConfirm = () => {
-    if (isFull) {
-      onConfirm(hand as string[]);
+    if (!isFull) return;
+
+    const fullHand = hand as string[];
+    const result = inferMelds(fullHand, flippedIndices);
+    if ("error" in result) {
+      setMeldError(result.error);
+      return;
     }
+
+    setMeldError(null);
+    onConfirm(fullHand, result.melds, [...flippedIndices]);
   };
 
   return (
@@ -130,7 +174,7 @@ export const HandConfirmation = ({ initialHand, onConfirm, onRetake }: HandConfi
           return (
             <button
               key={`slot-${i}`}
-              className={`hand-slot${i === selectedIndex ? " hand-slot--selected" : ""}${slot === null ? " hand-slot--empty" : ""}${i === dragIndex ? " hand-slot--dragging" : ""}${i === dragOverIndex ? " hand-slot--drag-over" : ""}`}
+              className={`hand-slot${i === selectedIndex ? " hand-slot--selected" : ""}${slot === null ? " hand-slot--empty" : ""}${i === dragIndex ? " hand-slot--dragging" : ""}${i === dragOverIndex ? " hand-slot--drag-over" : ""}${flippedIndices.has(i) ? " hand-slot--flipped" : ""}`}
               onClick={() => handleSlotClick(i)}
               aria-label={slot ? `Slot ${i + 1}: ${slot}` : `Slot ${i + 1}: empty`}
               data-slot-index={i}
@@ -172,14 +216,28 @@ export const HandConfirmation = ({ initialHand, onConfirm, onRetake }: HandConfi
         ))}
       </div>
 
+      {meldError && (
+        <div className="meld-error">
+          <p>{meldError}</p>
+        </div>
+      )}
+
       <div className="hand-actions">
         <button className="retake-btn" onClick={onRetake}>
           Retake
         </button>
         {hand[selectedIndex] !== null && (
-          <button className="clear-btn" onClick={handleClear}>
-            Clear
-          </button>
+          <>
+            <button className="clear-btn" onClick={handleClear}>
+              Clear
+            </button>
+            <button
+              className={`flip-btn${flippedIndices.has(selectedIndex) ? " flip-btn--active" : ""}`}
+              onClick={handleFlip}
+            >
+              Flip
+            </button>
+          </>
         )}
         <button className="confirm-btn" onClick={handleConfirm} disabled={!isFull}>
           Confirm Hand

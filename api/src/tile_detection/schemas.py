@@ -10,6 +10,7 @@ class DetectedTileResponse(BaseModel):
     is_back: bool
     suit: str | None
     number: int | None
+    is_rotated: bool
 
 
 class TileDetectionResponse(BaseModel):

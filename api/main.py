@@ -66,6 +66,7 @@ async def detect(file: UploadFile) -> TileDetectionResponse:
             is_back=tile.is_back,
             suit=tile.suit.value if tile.suit else None,
             number=tile.number,
+            is_rotated=tile.is_rotated,
         )
         for tile in tiles
     ]

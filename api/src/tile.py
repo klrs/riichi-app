@@ -39,6 +39,11 @@ class DetectedTile:
         return 5 if num == 0 else num  # red 5 → 5
 
     @property
+    def is_rotated(self) -> bool:
+        """Detect if tile is physically rotated sideways (wider than tall)."""
+        return (self.bbox[2] - self.bbox[0]) > (self.bbox[3] - self.bbox[1])
+
+    @property
     def name(self) -> str:
         """Human readable name: RED 5 MAN, 1 SOU, EAST, HAKU, BACK."""
         if self.is_back:

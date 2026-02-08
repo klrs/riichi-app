@@ -5,15 +5,15 @@ import { HandConfirmation } from "./components/HandConfirmation.tsx";
 import { HandScoring } from "./components/HandScoring.tsx";
 import { detectTiles } from "./api/detect.ts";
 import { handFromDetection } from "./utils/handFromDetection.ts";
-import type { HandSlot } from "./types/api.ts";
+import type { HandSlot, MeldInfo } from "./types/api.ts";
 import "./App.css";
 
 type AppState =
   | { status: "idle" }
   | { status: "capturing" }
   | { status: "detecting"; imageBlob: Blob }
-  | { status: "confirming"; initialHand: HandSlot[] }
-  | { status: "scoring"; hand: string[] }
+  | { status: "confirming"; initialHand: HandSlot[]; initialFlippedIndices: number[] }
+  | { status: "scoring"; hand: string[]; melds: MeldInfo[]; flippedIndices: number[] }
   | { status: "error"; message: string };
 
 function App() {
@@ -24,8 +24,8 @@ function App() {
 
     try {
       const result = await detectTiles(imageBlob);
-      const initialHand = handFromDetection(result);
-      setState({ status: "confirming", initialHand });
+      const { hand: initialHand, initialFlippedIndices } = handFromDetection(result);
+      setState({ status: "confirming", initialHand, initialFlippedIndices });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Detection failed";
       setState({ status: "error", message });
@@ -36,8 +36,8 @@ function App() {
     setState({ status: "idle" });
   };
 
-  const handleConfirm = (hand: string[]) => {
-    setState({ status: "scoring", hand });
+  const handleConfirm = (hand: string[], melds: MeldInfo[], flippedIndices: number[]) => {
+    setState({ status: "scoring", hand, melds, flippedIndices });
   };
 
   return (
@@ -70,13 +70,19 @@ function App() {
         {state.status === "confirming" && (
           <HandConfirmation
             initialHand={state.initialHand}
+            initialFlippedIndices={state.initialFlippedIndices}
             onConfirm={handleConfirm}
             onRetake={handleReset}
           />
         )}
 
         {state.status === "scoring" && (
-          <HandScoring hand={state.hand} onBack={handleReset} />
+          <HandScoring
+            hand={state.hand}
+            melds={state.melds}
+            flippedIndices={state.flippedIndices}
+            onBack={handleReset}
+          />
         )}
 
         {state.status === "error" && (
