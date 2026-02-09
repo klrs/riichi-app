@@ -1,19 +1,17 @@
 import { useState } from "react";
 import { CameraCapture } from "./components/CameraCapture.tsx";
 import { ImageDropZone } from "./components/ImageDropZone.tsx";
-import { HandConfirmation } from "./components/HandConfirmation.tsx";
-import { HandScoring } from "./components/HandScoring.tsx";
+import { HandEditor } from "./components/hand-editor/HandEditor.tsx";
 import { detectTiles } from "./api/detect.ts";
 import { handFromDetection } from "./utils/handFromDetection.ts";
-import type { HandSlot, MeldInfo } from "./types/api.ts";
+import type { HandSlot } from "./types/api.ts";
 import "./App.css";
 
 type AppState =
   | { status: "idle" }
   | { status: "capturing" }
   | { status: "detecting"; imageBlob: Blob }
-  | { status: "confirming"; initialHand: HandSlot[]; initialFlippedIndices: number[] }
-  | { status: "scoring"; hand: string[]; melds: MeldInfo[]; flippedIndices: number[] }
+  | { status: "editing"; initialHand: HandSlot[]; initialFlippedIndices: number[] }
   | { status: "error"; message: string };
 
 function App() {
@@ -25,7 +23,7 @@ function App() {
     try {
       const result = await detectTiles(imageBlob);
       const { hand: initialHand, initialFlippedIndices } = handFromDetection(result);
-      setState({ status: "confirming", initialHand, initialFlippedIndices });
+      setState({ status: "editing", initialHand, initialFlippedIndices });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Detection failed";
       setState({ status: "error", message });
@@ -34,10 +32,6 @@ function App() {
 
   const handleReset = () => {
     setState({ status: "idle" });
-  };
-
-  const handleConfirm = (hand: string[], melds: MeldInfo[], flippedIndices: number[]) => {
-    setState({ status: "scoring", hand, melds, flippedIndices });
   };
 
   return (
@@ -56,9 +50,7 @@ function App() {
           </div>
         )}
 
-        {state.status === "capturing" && (
-          <CameraCapture onCapture={handleCapture} />
-        )}
+        {state.status === "capturing" && <CameraCapture onCapture={handleCapture} />}
 
         {state.status === "detecting" && (
           <div className="detecting">
@@ -67,21 +59,11 @@ function App() {
           </div>
         )}
 
-        {state.status === "confirming" && (
-          <HandConfirmation
+        {state.status === "editing" && (
+          <HandEditor
             initialHand={state.initialHand}
             initialFlippedIndices={state.initialFlippedIndices}
-            onConfirm={handleConfirm}
             onRetake={handleReset}
-          />
-        )}
-
-        {state.status === "scoring" && (
-          <HandScoring
-            hand={state.hand}
-            melds={state.melds}
-            flippedIndices={state.flippedIndices}
-            onBack={handleReset}
           />
         )}
 

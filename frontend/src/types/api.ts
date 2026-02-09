@@ -33,6 +33,7 @@ export interface HandEvaluationRequest {
   round_wind: "east" | "south" | "west" | "north";
   is_riichi: boolean;
   melds: MeldInfo[];
+  dora_count?: number;
 }
 
 export interface YakuResult {

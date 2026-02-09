@@ -384,6 +384,9 @@ export const handlers = [
   http.post("/api/detect", async () => {
     return HttpResponse.json(mockDetectionResponse);
   }),
+  http.post("/api/hand/evaluate", async () => {
+    return HttpResponse.json(mockEvaluateSuccessResponse);
+  }),
 ];
 
 export const errorHandlers = [

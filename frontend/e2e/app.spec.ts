@@ -131,7 +131,7 @@ test.describe("Riichi Tile Detector App", () => {
     await expect(page.locator("video.camera-preview")).not.toBeVisible();
   });
 
-  test("Capture sends image to API and shows hand confirmation", async ({ page }) => {
+  test("Capture sends image to API and shows hand editor", async ({ page }) => {
     await page.goto("/");
 
     // Open camera
@@ -143,13 +143,12 @@ test.describe("Riichi Tile Detector App", () => {
     // Capture image
     await page.getByRole("button", { name: "Capture" }).click();
 
-    // Should show hand confirmation screen
+    // Should show hand editor screen
     await expect(page.getByTestId("hand-grid")).toBeVisible({ timeout: 5000 });
-    await expect(page.getByRole("button", { name: "Confirm Hand" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Retake" })).toBeVisible();
   });
 
-  test("hand confirmation shows detected tiles in slots", async ({ page }) => {
+  test("hand editor shows detected tiles in slots", async ({ page }) => {
     await page.goto("/");
 
     // Complete capture flow
@@ -157,15 +156,14 @@ test.describe("Riichi Tile Detector App", () => {
     await expect(page.getByRole("button", { name: "Capture" })).toBeVisible({ timeout: 5000 });
     await page.getByRole("button", { name: "Capture" }).click();
 
-    // Wait for hand confirmation
+    // Wait for hand editor
     await expect(page.getByTestId("hand-grid")).toBeVisible({ timeout: 5000 });
 
     // The 3-tile mock should populate 3 slots, leaving 11 empty
-    // Verify tile picker is visible
-    await expect(page.getByTestId("tile-picker")).toBeVisible();
-
-    // Confirm button should be disabled (only 3 of 14 tiles)
-    await expect(page.getByRole("button", { name: "Confirm Hand" })).toBeDisabled();
+    // Verify tile picker exists for filling empty slots
+    const picker = page.getByTestId("tile-picker");
+    await picker.scrollIntoViewIfNeeded();
+    await expect(picker).toBeVisible();
   });
 
   test("Retake button returns to idle state", async ({ page }) => {
@@ -176,7 +174,7 @@ test.describe("Riichi Tile Detector App", () => {
     await expect(page.getByRole("button", { name: "Capture" })).toBeVisible({ timeout: 5000 });
     await page.getByRole("button", { name: "Capture" }).click();
 
-    // Wait for hand confirmation
+    // Wait for hand editor
     await expect(page.getByTestId("hand-grid")).toBeVisible({ timeout: 5000 });
 
     // Click Retake
@@ -225,7 +223,7 @@ test.describe("Riichi Tile Detector App", () => {
     await expect(page.getByRole("button", { name: "Open Camera" })).toBeVisible();
   });
 
-  test("full user flow: capture, confirm hand, return to idle", async ({ page }) => {
+  test("full user flow: capture, edit hand, return to idle", async ({ page }) => {
     await page.goto("/");
 
     // Step 1: Initial state
@@ -239,9 +237,11 @@ test.describe("Riichi Tile Detector App", () => {
     await expect(page.getByRole("button", { name: "Capture" })).toBeVisible({ timeout: 5000 });
     await page.getByRole("button", { name: "Capture" }).click();
 
-    // Step 4: Hand confirmation screen
+    // Step 4: Hand editor screen (combined view)
     await expect(page.getByTestId("hand-grid")).toBeVisible({ timeout: 5000 });
-    await expect(page.getByTestId("tile-picker")).toBeVisible();
+    const picker = page.getByTestId("tile-picker");
+    await picker.scrollIntoViewIfNeeded();
+    await expect(picker).toBeVisible();
 
     // Step 5: Retake returns to idle
     await page.getByRole("button", { name: "Retake" }).click();

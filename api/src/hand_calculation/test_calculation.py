@@ -189,6 +189,100 @@ class TestEvaluateHand:
         yaku_names = [y.name for y in result.yaku]
         assert "Aka Dora" in yaku_names
 
+    def test_dora_count_adds_han(self):
+        request_no_dora = HandEvaluationRequest(
+            tiles=[
+                "2m", "3m", "4m",
+                "5p", "6p", "7p",
+                "2s", "3s", "4s",
+                "1z", "1z", "1z",
+                "9m", "9m",
+            ],
+            win_tile_index=13,
+            is_tsumo=False,
+            seat_wind="east",
+            round_wind="east",
+            is_riichi=False,
+            dora_count=0,
+        )
+        request_with_dora = HandEvaluationRequest(
+            tiles=[
+                "2m", "3m", "4m",
+                "5p", "6p", "7p",
+                "2s", "3s", "4s",
+                "1z", "1z", "1z",
+                "9m", "9m",
+            ],
+            win_tile_index=13,
+            is_tsumo=False,
+            seat_wind="east",
+            round_wind="east",
+            is_riichi=False,
+            dora_count=3,
+        )
+        result_no = evaluate_hand(request_no_dora)
+        result_yes = evaluate_hand(request_with_dora)
+        assert result_yes.han == result_no.han + 3
+        yaku_names = [y.name for y in result_yes.yaku]
+        assert "Dora" in yaku_names
+        dora_yaku = next(y for y in result_yes.yaku if y.name == "Dora")
+        assert dora_yaku.han_value == 3
+
+    def test_dora_count_recalculates_cost(self):
+        request_no_dora = HandEvaluationRequest(
+            tiles=[
+                "2m", "3m", "4m",
+                "5p", "6p", "7p",
+                "2s", "3s", "4s",
+                "1z", "1z", "1z",
+                "9m", "9m",
+            ],
+            win_tile_index=13,
+            is_tsumo=False,
+            seat_wind="east",
+            round_wind="east",
+            is_riichi=False,
+            dora_count=0,
+        )
+        request_with_dora = HandEvaluationRequest(
+            tiles=[
+                "2m", "3m", "4m",
+                "5p", "6p", "7p",
+                "2s", "3s", "4s",
+                "1z", "1z", "1z",
+                "9m", "9m",
+            ],
+            win_tile_index=13,
+            is_tsumo=False,
+            seat_wind="east",
+            round_wind="east",
+            is_riichi=False,
+            dora_count=2,
+        )
+        result_no = evaluate_hand(request_no_dora)
+        result_yes = evaluate_hand(request_with_dora)
+        assert result_yes.cost.main > result_no.cost.main
+
+    def test_dora_count_zero_has_no_effect(self):
+        request = HandEvaluationRequest(
+            tiles=[
+                "2m", "3m", "4m",
+                "5p", "6p", "7p",
+                "2s", "3s", "4s",
+                "1z", "1z", "1z",
+                "9m", "9m",
+            ],
+            win_tile_index=13,
+            is_tsumo=False,
+            seat_wind="east",
+            round_wind="east",
+            is_riichi=False,
+            dora_count=0,
+        )
+        result = evaluate_hand(request)
+        yaku_names = [y.name for y in result.yaku]
+        assert "Dora" not in yaku_names
+
     def test_different_winds(self):
         request = HandEvaluationRequest(
             tiles=[

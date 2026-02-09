@@ -16,6 +16,7 @@ class HandEvaluationRequest(BaseModel):
     round_wind: Literal["east", "south", "west", "north"]
     is_riichi: bool
     melds: list[MeldInfo] = Field(default_factory=list)
+    dora_count: int = Field(default=0, ge=0)
 
 
 class YakuResult(BaseModel):

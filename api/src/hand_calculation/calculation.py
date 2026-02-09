@@ -1,6 +1,7 @@
 from mahjong.constants import EAST, NORTH, SOUTH, WEST
 from mahjong.hand_calculating.hand import HandCalculator
 from mahjong.hand_calculating.hand_config import HandConfig, OptionalRules
+from mahjong.hand_calculating.scores import ScoresCalculator
 from mahjong.meld import Meld
 
 from src.hand_calculation.schemas import (
@@ -124,13 +125,37 @@ def evaluate_hand(request: HandEvaluationRequest) -> HandEvaluationResponse:
         for y in result.yaku
     ]
 
+    total_han = result.han
+    cost_dict = result.cost
+
+    if request.dora_count > 0:
+        total_han += request.dora_count
+
+        # Merge with existing Dora yaku entry if present
+        existing_dora = next((y for y in yaku_list if y.name == "Dora"), None)
+        if existing_dora:
+            existing_dora.han_value += request.dora_count
+        else:
+            yaku_list.append(
+                YakuResult(name="Dora", han_value=request.dora_count, is_yakuman=False)
+            )
+
+        # Recalculate cost with updated han
+        scores_calculator = ScoresCalculator()
+        cost_dict = scores_calculator.calculate_scores(
+            han=total_han,
+            fu=result.fu,
+            config=config,
+            is_yakuman=False,
+        )
+
     cost = CostResult(
-        main=result.cost["main"],
-        additional=result.cost["additional"],
+        main=cost_dict["main"],
+        additional=cost_dict["additional"],
     )
 
     return HandEvaluationResponse(
-        han=result.han,
+        han=total_han,
         fu=result.fu,
         yaku=yaku_list,
         cost=cost,

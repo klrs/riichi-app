@@ -1,0 +1,508 @@
+.hand-editor {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Hand Grid */
+.hand-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 0.75rem;
+  flex-shrink: 0;
+  touch-action: none;
+}
+
+.hand-slot {
+  aspect-ratio: 2 / 3;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  padding: 2px;
+}
+
+.hand-slot:hover {
+  border-color: #3498db;
+}
+
+.hand-slot--selected {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.4);
+}
+
+.hand-slot--empty {
+  color: #bbb;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.hand-slot[draggable="true"] {
+  cursor: grab;
+}
+
+.hand-slot--dragging {
+  opacity: 0.4;
+}
+
+.hand-slot--drag-over {
+  border: 2px dashed #3498db;
+}
+
+.hand-slot--flipped {
+  border-color: #e67e22;
+  background: #fef5e7;
+}
+
+.hand-slot--flipped img {
+  transform: rotate(90deg);
+}
+
+.hand-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Win Tile Row */
+.win-tile-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.win-tile-slot {
+  width: 48px;
+  height: 68px;
+  border: 2px dashed #e67e22;
+  border-radius: 6px;
+  background: #fef5e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.win-tile-slot--filled {
+  border-style: solid;
+  border-color: #e67e22;
+  box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.4);
+}
+
+.win-tile-slot.drag-over {
+  border-color: #d35400;
+  background: #fdebd0;
+}
+
+.win-tile-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 2px;
+}
+
+.win-tile-placeholder {
+  font-size: 0.65rem;
+  color: #e67e22;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.win-type-toggle {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.change-tile-zone {
+  width: 64px;
+  height: 68px;
+  border: 2px dashed #95a5a6;
+  border-radius: 6px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: #95a5a6;
+  text-align: center;
+  flex-shrink: 0;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.change-tile-zone.drag-over {
+  border-color: #3498db;
+  background: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+}
+
+/* Scoring Options */
+.scoring-options {
+  padding: 0 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.option-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666;
+  padding-left: 2px;
+}
+
+.toggle-group {
+  display: flex;
+  gap: 4px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 0.5rem 0.25rem;
+  font-size: 0.85rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.toggle-btn:hover {
+  border-color: #3498db;
+}
+
+.toggle-btn--active {
+  background: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.toggle-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Wind buttons with kanji */
+.round-wind-btn {
+  font-size: 1.1rem;
+  padding: 0.6rem 0.25rem;
+  font-weight: 700;
+}
+
+.round-wind-btn--active {
+  background: #e67e22;
+  color: white;
+  border-color: #e67e22;
+}
+
+.seat-wind-btn {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.seat-wind-btn--active {
+  background: #2c3e50;
+  color: white;
+  border-color: #2c3e50;
+}
+
+/* Dora Counter */
+.dora-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dora-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.dora-btn:hover:not(:disabled) {
+  border-color: #3498db;
+}
+
+.dora-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.dora-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Score Result */
+.scoring-result {
+  margin: 0 0.75rem 0.75rem;
+  padding: 0.75rem;
+  background: #f0faf4;
+  border: 1px solid #27ae60;
+  border-radius: 8px;
+}
+
+.result-summary {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.result-han,
+.result-fu {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.result-cost {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #e67e22;
+}
+
+.yaku-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.yaku-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid #d5f5e3;
+  font-size: 0.9rem;
+}
+
+.yaku-item:last-child {
+  border-bottom: none;
+}
+
+.yaku-name {
+  color: #333;
+}
+
+.yaku-han {
+  color: #666;
+  font-weight: 600;
+}
+
+/* Score Loading */
+.score-loading {
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+/* Errors */
+.scoring-error {
+  margin: 0 0.75rem 0.75rem;
+  padding: 0.75rem;
+  background: #fdf0ed;
+  border: 1px solid #e74c3c;
+  border-radius: 8px;
+  color: #e74c3c;
+  text-align: center;
+}
+
+.scoring-error p {
+  margin: 0;
+}
+
+.meld-error {
+  margin: 0 0.75rem 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: #fdf0ed;
+  border: 1px solid #e74c3c;
+  border-radius: 8px;
+  color: #e74c3c;
+  text-align: center;
+}
+
+.meld-error p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+/* Inline Tile Picker (for filling empty slots) */
+.inline-tile-picker {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 0.75rem;
+  min-height: 0;
+}
+
+.tile-picker-suit {
+  margin-bottom: 0.75rem;
+}
+
+.tile-picker-suit-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 0.25rem;
+  padding-left: 2px;
+}
+
+.tile-picker-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tile-picker-btn {
+  width: 40px;
+  height: 56px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  padding: 2px;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.tile-picker-btn:hover {
+  border-color: #3498db;
+  background: rgba(52, 152, 219, 0.05);
+}
+
+.tile-picker-btn:active {
+  background: rgba(52, 152, 219, 0.15);
+}
+
+.tile-picker-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Tile Picker Overlay (bottom sheet) */
+.tile-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.tile-picker-sheet {
+  background: white;
+  border-radius: 16px 16px 0 0;
+  padding: 1rem;
+  width: 100%;
+  max-width: 480px;
+  max-height: 60vh;
+  overflow-y: auto;
+  animation: slide-up 0.2s ease-out;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Actions */
+.hand-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  flex-shrink: 0;
+  border-top: 1px solid #eee;
+}
+
+.hand-actions button {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.retake-btn {
+  background: #95a5a6;
+  color: white;
+}
+
+.retake-btn:hover {
+  background: #7f8c8d;
+}
+
+.clear-btn {
+  background: #e74c3c;
+  color: white;
+}
+
+.clear-btn:hover {
+  background: #c0392b;
+}
+
+.flip-btn {
+  background: #e67e22;
+  color: white;
+}
+
+.flip-btn:hover {
+  background: #d35400;
+}
+
+.flip-btn--active {
+  background: #d35400;
+}
