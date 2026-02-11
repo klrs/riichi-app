@@ -25,54 +25,78 @@ export const WinTileRow = ({
   };
 
   return (
-    <div className="win-tile-row">
-      <button
-        className={`win-tile-slot${winTile ? " win-tile-slot--filled" : ""}`}
-        data-drop-target="win"
-        data-testid="win-tile-slot"
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => {
-          e.preventDefault();
-          const idx = getDropIndex(e);
-          if (idx !== null) onDropToWin(idx);
-        }}
-        onClick={onWinTileClick}
-        aria-label={winTile ? `Win tile: ${winTile}` : "Win tile slot"}
-      >
-        {svg ? (
-          <img src={svg} alt={winTile!} />
-        ) : (
-          <span className="win-tile-placeholder">Win tile</span>
-        )}
-      </button>
+    <div className="win-tile-section">
+      <div className="win-tile-zones">
+        <div className="win-tile-zone">
+          <div className="zone-label">Win Tile</div>
+          <button
+            className={`win-tile-slot${winTile ? " win-tile-slot--filled" : ""}`}
+            data-drop-target="win"
+            data-testid="win-tile-slot"
+            onDragEnter={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.add("drag-over");
+            }}
+            onDragOver={(e) => e.preventDefault()}
+            onDragLeave={(e) => {
+              e.currentTarget.classList.remove("drag-over");
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove("drag-over");
+              const idx = getDropIndex(e);
+              if (idx !== null) onDropToWin(idx);
+            }}
+            onClick={onWinTileClick}
+            aria-label={winTile ? `Win tile: ${winTile}` : "Win tile slot"}
+          >
+            {svg ? (
+              <img src={svg} alt={winTile!} />
+            ) : (
+              <span className="win-tile-placeholder">Drag here</span>
+            )}
+          </button>
+        </div>
+
+        <div className="swap-zone">
+          <div className="zone-label">Swap</div>
+          <div
+            className="change-tile-zone"
+            data-drop-target="change"
+            data-testid="change-tile-zone"
+            onDragEnter={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.add("drag-over");
+            }}
+            onDragOver={(e) => e.preventDefault()}
+            onDragLeave={(e) => {
+              e.currentTarget.classList.remove("drag-over");
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove("drag-over");
+              const idx = getDropIndex(e);
+              if (idx !== null) onDropToChange(idx);
+            }}
+          >
+            Drag here
+          </div>
+        </div>
+      </div>
 
       <div className="win-type-toggle">
         <button
-          className={`toggle-btn${!isTsumo ? " toggle-btn--active" : ""}`}
+          className={`segment${!isTsumo ? " segment--active" : ""}`}
           onClick={() => onSetTsumo(false)}
         >
           Ron
         </button>
         <button
-          className={`toggle-btn${isTsumo ? " toggle-btn--active" : ""}`}
+          className={`segment${isTsumo ? " segment--active" : ""}`}
           onClick={() => onSetTsumo(true)}
         >
           Tsumo
         </button>
-      </div>
-
-      <div
-        className="change-tile-zone"
-        data-drop-target="change"
-        data-testid="change-tile-zone"
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => {
-          e.preventDefault();
-          const idx = getDropIndex(e);
-          if (idx !== null) onDropToChange(idx);
-        }}
-      >
-        Change tile
       </div>
     </div>
   );

@@ -8,6 +8,9 @@ interface HandGridProps {
   flippedIndices: Set<number>;
   onSlotClick: (index: number) => void;
   onReorder: (from: number, to: number) => void;
+  onFlip?: (index: number) => void;
+  onDropToWin?: (fromIndex: number) => void;
+  onDropToChange?: (fromIndex: number) => void;
 }
 
 export const HandGrid = ({
@@ -16,6 +19,9 @@ export const HandGrid = ({
   flippedIndices,
   onSlotClick,
   onReorder,
+  onFlip,
+  onDropToWin,
+  onDropToChange,
 }: HandGridProps) => {
   const dragIndexRef = useRef<number | null>(null);
   const dragOverIndexRef = useRef<number | null>(null);
@@ -112,11 +118,10 @@ export const HandGrid = ({
     ) as HTMLElement | null;
     if (from !== null && activeTarget) {
       const target = activeTarget.dataset.dropTarget;
-      if (target === "win" || target === "change") {
-        // Dispatch a custom event so HandEditor can handle it
-        activeTarget.dispatchEvent(
-          new CustomEvent("tile-drop", { detail: { fromIndex: from }, bubbles: true }),
-        );
+      if (target === "win" && onDropToWin) {
+        onDropToWin(from);
+      } else if (target === "change" && onDropToChange) {
+        onDropToChange(from);
       }
     } else if (from !== null && toIdx !== null && from !== toIdx) {
       onReorder(from, toIdx);
@@ -141,7 +146,12 @@ export const HandGrid = ({
           <button
             key={`slot-${i}`}
             className={`hand-slot${i === selectedIndex ? " hand-slot--selected" : ""}${slot === null ? " hand-slot--empty" : ""}${flippedIndices.has(i) ? " hand-slot--flipped" : ""}`}
-            onClick={() => onSlotClick(i)}
+            onClick={() => {
+              if (slot !== null && onFlip) {
+                onFlip(i);
+              }
+              onSlotClick(i);
+            }}
             aria-label={slot ? `Slot ${i + 1}: ${slot}` : `Slot ${i + 1}: empty`}
             data-slot-index={i}
             draggable={slot !== null}
@@ -153,7 +163,7 @@ export const HandGrid = ({
             onDrop={(e) => handleDrop(i, e)}
             onDragEnd={handleDragEnd}
           >
-            {svg ? <img src={svg} alt={slot!} /> : "?"}
+            {svg ? <img src={svg} alt={slot!} draggable={false} /> : "?"}
           </button>
         );
       })}

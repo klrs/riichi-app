@@ -37,7 +37,9 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Riichi Tile Detector</h1>
+        <div className="app-header-accent" />
+        <h1>Score Calculator</h1>
+        <p className="app-header-subtitle">Riichi Mahjong</p>
       </header>
 
       <main className="app-main">

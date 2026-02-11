@@ -75,7 +75,7 @@ async function mockDetectionApi(
   });
 }
 
-test.describe("Riichi Tile Detector App", () => {
+test.describe("Score Calculator App", () => {
   test.beforeEach(async ({ page }) => {
     await mockCamera(page);
     await mockDetectionApi(page);
@@ -84,7 +84,7 @@ test.describe("Riichi Tile Detector App", () => {
   test("shows initial state with Open Camera button", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { name: "Riichi Tile Detector" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Score Calculator" })).toBeVisible();
     await expect(
       page.getByText("Take a photo or drop an image of mahjong tiles to detect them"),
     ).toBeVisible();
@@ -227,7 +227,7 @@ test.describe("Riichi Tile Detector App", () => {
     await page.goto("/");
 
     // Step 1: Initial state
-    await expect(page.getByRole("heading", { name: "Riichi Tile Detector" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Score Calculator" })).toBeVisible();
 
     // Step 2: Open camera
     await page.getByRole("button", { name: "Open Camera" }).click();

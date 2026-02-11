@@ -173,18 +173,24 @@ export const HandEditor = ({ initialHand, initialFlippedIndices, onRetake }: Han
     const tile = hand[fromIndex];
     if (!tile) return;
 
-    // If there's already a win tile, put it back first
-    if (winTile !== null) {
-      insertWinTileBack();
-    }
-
     const wasFlipped = flippedIndices.has(fromIndex);
     const next = [...hand];
     next.splice(fromIndex, 1);
+
+    // Remap flipped indices after removing the new win tile
+    let newFlipped = remapFlippedAfterRemoval(flippedIndices, fromIndex);
+
+    // If there's already a win tile, return it to the hand
+    if (winTile !== null) {
+      const insertIdx = next.length;
+      next.push(winTile);
+      newFlipped = remapFlippedAfterInsertion(newFlipped, insertIdx, winTileFlipped);
+    }
+
     setHand(next);
     setWinTile(tile);
     setWinTileFlipped(wasFlipped);
-    setFlippedIndices(remapFlippedAfterRemoval(flippedIndices, fromIndex));
+    setFlippedIndices(newFlipped);
     setSelectedIndex(Math.min(fromIndex, next.length - 1));
   };
 
@@ -230,12 +236,12 @@ export const HandEditor = ({ initialHand, initialFlippedIndices, onRetake }: Han
     }
   };
 
-  const handleFlip = () => {
+  const handleFlip = (index: number) => {
     const newFlipped = new Set(flippedIndices);
-    if (newFlipped.has(selectedIndex)) {
-      newFlipped.delete(selectedIndex);
+    if (newFlipped.has(index)) {
+      newFlipped.delete(index);
     } else {
-      newFlipped.add(selectedIndex);
+      newFlipped.add(index);
     }
     setFlippedIndices(newFlipped);
     setMeldError(null);
@@ -265,6 +271,9 @@ export const HandEditor = ({ initialHand, initialFlippedIndices, onRetake }: Han
         flippedIndices={flippedIndices}
         onSlotClick={handleSlotClick}
         onReorder={handleReorder}
+        onFlip={isFull ? handleFlip : undefined}
+        onDropToWin={isFull ? (fromIndex) => { if (hand[fromIndex]) extractWinTile(fromIndex); } : undefined}
+        onDropToChange={isFull ? (fromIndex) => { setPickerTarget({ type: "grid", index: fromIndex }); setPickerOpen(true); } : undefined}
       />
 
       {hasEmptySlots ? (
@@ -338,17 +347,9 @@ export const HandEditor = ({ initialHand, initialFlippedIndices, onRetake }: Han
           Retake
         </button>
         {hand[selectedIndex] !== null && hand.length === HAND_SIZE && (
-          <>
-            <button className="clear-btn" onClick={handleClear}>
-              Clear
-            </button>
-            <button
-              className={`flip-btn${flippedIndices.has(selectedIndex) ? " flip-btn--active" : ""}`}
-              onClick={handleFlip}
-            >
-              Flip
-            </button>
-          </>
+          <button className="clear-btn" onClick={handleClear}>
+            Clear
+          </button>
         )}
       </div>
 

@@ -3,15 +3,29 @@
 }
 
 :root {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
+  /* Design tokens */
+  --accent-red: #dc2626;
+  --accent-red-dim: #7f1d1d;
+  --bg-deep: #0d0d0f;
+  --bg-surface: #1a1a1f;
+  --bg-surface-2: #242429;
+  --bg-surface-3: #2e2e35;
+  --border: #3a3a42;
+  --border-subtle: #2a2a32;
+  --text-primary: #f0ede8;
+  --text-secondary: #8a8a95;
+  --text-muted: #5a5a65;
+  --tile-face: #f5f0e8;
+  --tile-stroke: #d4cfc5;
+  --font-ui: "Sora", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  font-family: var(--font-ui);
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: #333;
-  background-color: #f5f5f5;
+  color: var(--text-primary);
+  background-color: var(--bg-deep);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -34,23 +48,4 @@ body {
 
 button {
   font-family: inherit;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f5f5f5;
-    background-color: #1a1a1a;
-  }
-
-  .capture-section p {
-    color: #aaa;
-  }
-
-  .tile-item {
-    border-bottom-color: #333;
-  }
-
-  .tile-confidence {
-    color: #aaa;
-  }
 }

@@ -217,8 +217,8 @@ test.describe("Hand Editor", () => {
 
       const ronBtn = page.getByRole("button", { name: "Ron" });
       const tsumoBtn = page.getByRole("button", { name: "Tsumo" });
-      await expect(ronBtn).toHaveClass(/toggle-btn--active/);
-      await expect(tsumoBtn).not.toHaveClass(/toggle-btn--active/);
+      await expect(ronBtn).toHaveClass(/segment--active/);
+      await expect(tsumoBtn).not.toHaveClass(/segment--active/);
     });
 
     test("can toggle between Ron and Tsumo", async ({ page }) => {
@@ -228,26 +228,26 @@ test.describe("Hand Editor", () => {
       const ronBtn = page.getByRole("button", { name: "Ron" });
 
       await tsumoBtn.click();
-      await expect(tsumoBtn).toHaveClass(/toggle-btn--active/);
-      await expect(ronBtn).not.toHaveClass(/toggle-btn--active/);
+      await expect(tsumoBtn).toHaveClass(/segment--active/);
+      await expect(ronBtn).not.toHaveClass(/segment--active/);
 
       await ronBtn.click();
-      await expect(ronBtn).toHaveClass(/toggle-btn--active/);
-      await expect(tsumoBtn).not.toHaveClass(/toggle-btn--active/);
+      await expect(ronBtn).toHaveClass(/segment--active/);
+      await expect(tsumoBtn).not.toHaveClass(/segment--active/);
     });
 
     test("can toggle Riichi on and off", async ({ page }) => {
       await navigateToHandEditor(page);
 
-      const riichiGroup = page.locator(".option-group").first();
-      const yesBtn = riichiGroup.getByRole("button", { name: "Yes" });
-      const noBtn = riichiGroup.getByRole("button", { name: "No" });
+      const riichiRow = page.locator(".option-row").first();
+      const yesBtn = riichiRow.getByRole("button", { name: "Yes" });
+      const noBtn = riichiRow.getByRole("button", { name: "No" });
 
-      await expect(noBtn).toHaveClass(/toggle-btn--active/);
+      await expect(noBtn).toHaveClass(/pill-segment--active/);
 
       await yesBtn.click();
-      await expect(yesBtn).toHaveClass(/toggle-btn--active/);
-      await expect(noBtn).not.toHaveClass(/toggle-btn--active/);
+      await expect(yesBtn).toHaveClass(/pill-segment--active/);
+      await expect(noBtn).not.toHaveClass(/pill-segment--active/);
     });
 
     test("dora counter starts at 0 and can be incremented", async ({ page }) => {
@@ -371,6 +371,32 @@ test.describe("Hand Editor", () => {
 
       // Grid should be back to 14 tiles
       await expect(grid.locator(".hand-slot")).toHaveCount(14);
+    });
+
+    test("dragging a new win tile returns the previous one to hand", async ({ page }) => {
+      await mockEvaluateApi(page, mockEvaluateSuccessResponse);
+      await navigateToHandEditor(page);
+
+      const grid = page.getByTestId("hand-grid");
+      const winSlot = page.getByTestId("win-tile-slot");
+
+      // Drag tile at index 13 (9m) to win slot
+      await grid.locator(".hand-slot").nth(13).dragTo(winSlot);
+      await expect(winSlot.getByAltText("9m")).toBeVisible();
+      await expect(grid.locator(".hand-slot")).toHaveCount(13);
+
+      // Hand should have 1 remaining 9m tile after extracting the other
+      await expect(grid.getByAltText("9m")).toHaveCount(1);
+
+      // Drag tile at index 0 (1z) to win slot — previous win tile (9m) should return to hand
+      await grid.locator(".hand-slot").nth(0).dragTo(winSlot);
+      await expect(winSlot.getByAltText("1z")).toBeVisible();
+
+      // Grid should still have 13 tiles (old win tile returned, new one extracted)
+      await expect(grid.locator(".hand-slot")).toHaveCount(13);
+
+      // The returned 9m tile should be back in the hand (2 copies again)
+      await expect(grid.getByAltText("9m")).toHaveCount(2);
     });
   });
 

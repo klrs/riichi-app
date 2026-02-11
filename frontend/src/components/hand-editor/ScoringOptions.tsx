@@ -35,18 +35,18 @@ export const ScoringOptions = ({
 }: ScoringOptionsProps) => {
   return (
     <div className="scoring-options">
-      <div className="option-group">
+      <div className="option-row">
         <span className="option-label">Riichi</span>
-        <div className="toggle-group">
+        <div className="pill-toggle pill-toggle--small">
           <button
-            className={`toggle-btn${!isRiichi || isOpenHand ? " toggle-btn--active" : ""}${isOpenHand ? " toggle-btn--disabled" : ""}`}
+            className={`pill-segment${!isRiichi || isOpenHand ? " pill-segment--active" : ""}${isOpenHand ? " pill-segment--disabled" : ""}`}
             onClick={() => !isOpenHand && onSetRiichi(false)}
             disabled={isOpenHand}
           >
             No
           </button>
           <button
-            className={`toggle-btn${isRiichi && !isOpenHand ? " toggle-btn--active" : ""}${isOpenHand ? " toggle-btn--disabled" : ""}`}
+            className={`pill-segment${isRiichi && !isOpenHand ? " pill-segment--active" : ""}${isOpenHand ? " pill-segment--disabled" : ""}`}
             onClick={() => !isOpenHand && onSetRiichi(true)}
             disabled={isOpenHand}
           >
@@ -55,22 +55,22 @@ export const ScoringOptions = ({
         </div>
       </div>
 
-      <div className="option-group">
+      <div className="option-row">
         <span className="option-label">Dora</span>
-        <div className="dora-counter">
+        <div className="dora-stepper">
           <button
-            className="dora-btn"
+            className="stepper-btn"
             onClick={() => onSetDoraCount(Math.max(0, doraCount - 1))}
             disabled={doraCount === 0}
             aria-label="Decrease dora"
           >
             -
           </button>
-          <span className="dora-value" data-testid="dora-count">
+          <span className="stepper-value" data-testid="dora-count">
             {doraCount}
           </span>
           <button
-            className="dora-btn"
+            className="stepper-btn"
             onClick={() => onSetDoraCount(doraCount + 1)}
             aria-label="Increase dora"
           >
@@ -79,13 +79,15 @@ export const ScoringOptions = ({
         </div>
       </div>
 
+      <div className="scoring-divider" />
+
       <div className="option-group">
         <span className="option-label">Round Wind</span>
-        <div className="toggle-group">
+        <div className="wind-group">
           {roundWinds.map((w) => (
             <button
               key={w}
-              className={`toggle-btn round-wind-btn${roundWind === w ? " round-wind-btn--active" : ""}`}
+              className={`wind-btn round-wind-btn${roundWind === w ? " wind-btn--active" : ""}`}
               onClick={() => onSetRoundWind(w)}
             >
               {WIND_KANJI[w]}
@@ -96,11 +98,11 @@ export const ScoringOptions = ({
 
       <div className="option-group">
         <span className="option-label">Seat Wind</span>
-        <div className="toggle-group">
+        <div className="wind-group">
           {seatWinds.map((w) => (
             <button
               key={w}
-              className={`toggle-btn seat-wind-btn${seatWind === w ? " seat-wind-btn--active" : ""}`}
+              className={`wind-btn seat-wind-btn${seatWind === w ? " wind-btn--active" : ""}`}
               onClick={() => onSetSeatWind(w)}
             >
               {WIND_KANJI[w]}
