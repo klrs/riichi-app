@@ -7,7 +7,7 @@ image: klrs/riichi-app
 # Deploy to these servers.
 servers:
   web:
-    - riichi-vps
+    - 89.167.11.145
   # job:
   #   hosts:
   #     - 192.168.0.1

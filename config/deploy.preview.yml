@@ -1,0 +1,11 @@
+service: riichi-preview
+
+ssh:
+  user: deployer
+
+proxy:
+  host: riichi-preview.kallerissanen.com
+  ssl: true
+  app_port: 8000
+  healthcheck:
+    path: /api/up
